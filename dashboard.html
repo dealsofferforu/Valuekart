@@ -380,7 +380,7 @@ const BSLOT_ID   = "1LLCIx-mj_cPjaz0k64I8RAj5b0e_FffHWi9rJ2RLkAA"; const BSLOT_G
 // YouTube tab: open that sheet's "YouTube" tab, copy gid= from URL, paste below
 const YT_ID      = "1aN3B_4AJbi0jI7A6Jksema2QJbQkNkyS7sNCsJCCbeA";  const YT_GID      = "0";
 
-function csvUrl(id, gid){ return "https://docs.google.com/spreadsheets/d/"+id+"/export?format=csv&gid="+gid; }
+function csvUrl(id, gid){ return "https://docs.google.com/spreadsheets/d/"+id+"/gviz/tq?tqx=out:csv&gid="+gid; }
 
 const ASLOT_CSV   = csvUrl(ASLOT_ID,  ASLOT_GID);
 const AORD_CSV    = csvUrl(AORD_ID,   AORD_GID);
