@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ValueKart</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
 /* ===== DESIGN TOKENS ===== */
 :root{
@@ -403,31 +404,13 @@ const BSLOT_COLS  = ["Slot","Product Code","LOC","Review Slot","Rating Slot","Pr
 const DATA = { aslot:[], aord:[], aref:[], bord:[], bref:[], bslot:[], yt:[] };
 
 // =============================================================
-// CSV PARSER
+// CSV PARSER (PapaParse — robust against embedded quotes/commas/newlines)
 // =============================================================
 function parseCSV(text){
-  const rows=[];
-  let row=[],field='',inQ=false;
-  for(let i=0;i<text.length;i++){
-    const c=text[i],n=text[i+1];
-    if(inQ){
-      if(c==='"'&&n==='"'){field+='"';i++;}
-      else if(c==='"'){inQ=false;}
-      else{field+=c;}
-    }else{
-      if(c==='"'){inQ=true;}
-      else if(c===','){row.push(field);field='';}
-      else if(c==='\r'){/*skip*/}
-      else if(c==='\n'){row.push(field);rows.push(row);row=[];field='';}
-      else{field+=c;}
-    }
-  }
-  if(field.length||row.length){row.push(field);rows.push(row);}
-  if(!rows.length)return[];
-  const headers=rows[0].map(h=>h.trim());
-  return rows.slice(1).filter(r=>r.some(c=>c&&c.trim()!=='')).map(r=>{
+  const result = Papa.parse(text, { header:true, skipEmptyLines:true });
+  return result.data.map(row=>{
     const obj={};
-    headers.forEach((h,i)=>obj[h]=(r[i]!==undefined?r[i]:'').trim());
+    Object.keys(row).forEach(k=>obj[k.trim()]=(row[k]||'').toString().trim());
     return obj;
   });
 }
