@@ -92,6 +92,16 @@ tbody td{padding:11px 14px;border-bottom:1px solid var(--border);white-space:now
 tbody tr:last-child td{border-bottom:none;}
 tbody tr:hover{background:#f8f9fd;}
 
+/* ===== PRODUCT NAME COPY + IMAGE ===== */
+.product-name-cell{display:flex;align-items:center;gap:9px;min-width:260px;max-width:460px;}
+.product-name-text{white-space:normal;line-height:1.35;flex:1;}
+.copy-btn{border:1px solid #c7d2fe;background:#eef2ff;color:#4338ca;padding:5px 8px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap;transition:.15s;}
+.copy-btn:hover{background:#4f46e5;color:#fff;border-color:#4f46e5;}
+.copy-btn.copied{background:var(--green-bg);color:var(--green);border-color:#86efac;}
+.product-thumb{width:62px;height:62px;object-fit:contain;background:#fff;border:1px solid var(--border);border-radius:9px;padding:3px;display:block;}
+.product-thumb:hover{box-shadow:var(--sh-md);transform:scale(1.04);}
+.image-empty{color:var(--muted);font-size:12px;}
+
 /* ===== BADGES ===== */
 .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:700;}
 .badge.paid{background:var(--green-bg);color:var(--green);}
@@ -221,7 +231,7 @@ footer a:hover{text-decoration:underline;}
       <span id="aslot-updated">Last updated: —</span>
     </div>
     <div class="toolbar">
-      <input type="text" id="aslot-search" placeholder="Search by Slot, Product Code...">
+      <input type="text" id="aslot-search" placeholder="Search by Slot, Product Code, Product Name...">
       <button class="btn" onclick="loadASlot()">↻ Refresh</button>
     </div>
     <div class="table-wrap" id="aslot-wrap"><div class="loading">Loading...</div></div>
@@ -278,7 +288,7 @@ footer a:hover{text-decoration:underline;}
       <span id="bslot-updated">Last updated: —</span>
     </div>
     <div class="toolbar">
-      <input type="text" id="bslot-search" placeholder="Search by Slot, Product Code...">
+      <input type="text" id="bslot-search" placeholder="Search by Slot, Product Code, Product Name...">
       <button class="btn" onclick="loadBSlot()">↻ Refresh</button>
     </div>
     <div class="table-wrap" id="bslot-wrap"><div class="loading">Loading...</div></div>
@@ -391,12 +401,13 @@ const BSLOT_CSV   = csvUrl(BSLOT_ID,  BSLOT_GID);
 const YOUTUBE_CSV_URL = csvUrl(YT_ID, YT_GID);
 
 // Column maps — edit these to change visible columns
-const ASLOT_COLS  = ["Slot","Product Code","Review Slot","Rating Slot","Product Name","Link"];
+// For slot images, add a Google Sheet column named exactly "Image" and paste a public image URL in each row.
+const ASLOT_COLS  = ["Slot","Product Code","Review Slot","Rating Slot","Product Name","Image","Link"];
 const AORD_COLS   = ["Timestamp","Name","Order id","Delivery Date","Product ID","Days Delivered"];
 const AREF_COLS   = ["Timestamp","Reviewer Name","ORDER ID","Order Code","Payment Date","Payment","Return Window","Order and refund Price same or not","Checked List"];
 const BORD_COLS   = ["Timestamp","Name","Order ID","Delivery Date","Product Code","Location"];
 const BREF_COLS   = ["Timestamp","Reviewer Name","Order ID","Delivery Date","Product Code","Payment date","Return Window","payment status"];
-const BSLOT_COLS  = ["Slot","Product Code","LOC","Review Slot","Rating Slot","Product Name","Link"];
+const BSLOT_COLS  = ["Slot","Product Code","LOC","Review Slot","Rating Slot","Product Name","Image","Link"];
 
 // =============================================================
 // DATA STORE
@@ -455,16 +466,72 @@ function matchBadge(v){
 // =============================================================
 // GENERIC TABLE RENDERER
 // =============================================================
-function renderTable(wrapId, rows, cols, linkCols, paymentCols, checkedCols, matchCols){
+function escapeHtml(value){
+  return String(value??'')
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'",'&#039;');
+}
+function escapeAttr(value){return escapeHtml(value);}
+
+function normalizeImageUrl(url){
+  const raw=(url||'').trim();
+  if(!raw)return '';
+
+  // Converts common Google Drive sharing links into a displayable thumbnail URL.
+  let m=raw.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
+  if(m)return 'https://drive.google.com/thumbnail?id='+m[1]+'&sz=w300';
+  m=raw.match(/[?&]id=([^&#]+)/i);
+  if(raw.includes('drive.google.com')&&m)return 'https://drive.google.com/thumbnail?id='+m[1]+'&sz=w300';
+
+  return raw;
+}
+
+async function copyCellText(btn){
+  const value=btn.dataset.copy||'';
+  try{
+    if(navigator.clipboard&&window.isSecureContext){
+      await navigator.clipboard.writeText(value);
+    }else{
+      const ta=document.createElement('textarea');
+      ta.value=value;
+      ta.style.position='fixed';
+      ta.style.opacity='0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+    }
+    const old=btn.innerHTML;
+    btn.innerHTML='✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.innerHTML=old;btn.classList.remove('copied');},1400);
+  }catch(err){
+    alert('Copy failed. Please select and copy the product name manually.');
+  }
+}
+
+function renderTable(wrapId, rows, cols, linkCols, paymentCols, checkedCols, matchCols, copyCols, imageCols){
   const wrap=document.getElementById(wrapId);
   if(!rows.length){wrap.innerHTML='<div class="empty">No matching records.</div>';return;}
-  let html='<table><thead><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>';
+  let html='<table><thead><tr>'+cols.map(c=>'<th>'+escapeHtml(c)+'</th>').join('')+'</tr></thead><tbody>';
   rows.forEach(r=>{
     html+='<tr>';
     cols.forEach(c=>{
       const v=g(r,c);
       if(linkCols&&linkCols.includes(c)){
-        html+='<td>'+(v?'<a class="lnk" href="'+v+'" target="_blank">Open ↗</a>':'—')+'</td>';
+        html+='<td>'+(v?'<a class="lnk" href="'+escapeAttr(v)+'" target="_blank" rel="noopener noreferrer">Open ↗</a>':'—')+'</td>';
+      }else if(imageCols&&imageCols.includes(c)){
+        const src=normalizeImageUrl(v);
+        html+='<td>'+(src
+          ?'<a href="'+escapeAttr(src)+'" target="_blank" rel="noopener noreferrer" title="Open full image"><img class="product-thumb" src="'+escapeAttr(src)+'" alt="Product image" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.nextElementSibling.style.display=\'inline\';"></a><span class="image-empty" style="display:none">Image unavailable</span>'
+          :'<span class="image-empty">—</span>')+'</td>';
+      }else if(copyCols&&copyCols.includes(c)){
+        html+='<td><div class="product-name-cell"><span class="product-name-text">'+escapeHtml(v||'—')+'</span>'+
+          (v?'<button class="copy-btn" type="button" data-copy="'+escapeAttr(v)+'" onclick="copyCellText(this)" title="Copy product name">⧉ Copy</button>':'')+
+          '</div></td>';
       }else if(paymentCols&&paymentCols.includes(c)){
         html+='<td>'+payBadge(v)+'</td>';
       }else if(checkedCols&&checkedCols.includes(c)){
@@ -472,7 +539,7 @@ function renderTable(wrapId, rows, cols, linkCols, paymentCols, checkedCols, mat
       }else if(matchCols&&matchCols.includes(c)){
         html+='<td>'+matchBadge(v)+'</td>';
       }else{
-        html+='<td>'+(v||'')+'</td>';
+        html+='<td>'+escapeHtml(v||'')+'</td>';
       }
     });
     html+='</tr>';
@@ -494,8 +561,8 @@ async function loadASlot(){
 }
 function renderASlot(){
   const q=(document.getElementById('aslot-search').value||'').toLowerCase();
-  const rows=DATA.aslot.filter(r=>!q||(g(r,'Slot').toLowerCase().includes(q)||g(r,'Product Code').toLowerCase().includes(q)));
-  renderTable('aslot-wrap',rows,ASLOT_COLS,['Link'],null,null,null);
+  const rows=DATA.aslot.filter(r=>!q||(g(r,'Slot').toLowerCase().includes(q)||g(r,'Product Code').toLowerCase().includes(q)||g(r,'Product Name').toLowerCase().includes(q)));
+  renderTable('aslot-wrap',rows,ASLOT_COLS,['Link'],null,null,null,['Product Name'],['Image']);
 }
 
 async function loadAOrders(){
@@ -536,8 +603,8 @@ async function loadBSlot(){
 }
 function renderBSlot(){
   const q=(document.getElementById('bslot-search').value||'').toLowerCase();
-  const rows=DATA.bslot.filter(r=>!q||(g(r,'Slot').toLowerCase().includes(q)||g(r,'Product Code').toLowerCase().includes(q)));
-  renderTable('bslot-wrap',rows,BSLOT_COLS,['Link'],null,null,null);
+  const rows=DATA.bslot.filter(r=>!q||(g(r,'Slot').toLowerCase().includes(q)||g(r,'Product Code').toLowerCase().includes(q)||g(r,'Product Name').toLowerCase().includes(q)));
+  renderTable('bslot-wrap',rows,BSLOT_COLS,['Link'],null,null,null,['Product Name'],['Image']);
 }
 
 async function loadBOrders(){
