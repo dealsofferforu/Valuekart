@@ -448,7 +448,7 @@ function setStatus(dotId,statusId,updId,ok,msg){
 function payBadge(v){
   const s=(v||'').toLowerCase();
   if(!s)return'<span class="badge pending">Pending</span>';
-  if(/(done|paid|yes|complete)/.test(s))return'<span class="badge paid">Paid</span>';
+  if(/(done|paid|correct|complete)/.test(s))return'<span class="badge paid">Correct</span>';
   return'<span class="badge pending">Pending</span>';
 }
 function checkedBadge(v){
@@ -458,7 +458,7 @@ function checkedBadge(v){
 }
 function matchBadge(v){
   const s=(v||'').toLowerCase();
-  if(/(mismatch|no|different)/.test(s))return'<span class="badge mismatch">Mismatch</span>';
+  if(/(mismatch|no|wrong)/.test(s))return'<span class="badge mismatch"> 🚫 Wrong Delivery or Review rating SS</span>';
   if(/(match|yes|same)/.test(s))return'<span class="badge match">Match</span>';
   return v||'—';
 }
