@@ -453,7 +453,7 @@ function payBadge(v){
 }
 function checkedBadge(v){
   const s=(v||'').toLowerCase();
-  if(/(verified|done|yes)/.test(s))return'<span class="badge verified">Verified</span>';
+  if(/(verified|done|yes)/.test(s))return'<span class="badge verified">Need UnVerified Review</span>';
   return v||'—';
 }
 function matchBadge(v){
