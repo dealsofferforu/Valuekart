@@ -740,7 +740,67 @@ document.getElementById('bord-search').addEventListener('input',renderBOrders);
 document.getElementById('bref-search').addEventListener('input',renderBRefunds);
 document.getElementById('yt-search').addEventListener('input',renderYoutube);
 document.getElementById('yt-cat').addEventListener('change',renderYoutube);
+----------------------
+ // Show only rows where Status is Active---------------------------------------------------------------------------
+function isActiveSlot(row) {
+  return g(row, 'Status').toLowerCase().trim() === 'active';
+}
 
+// AMAZON SLOT
+function renderASlot() {
+  const q = (document.getElementById('aslot-search').value || '')
+    .toLowerCase()
+    .trim();
+
+  const rows = DATA.aslot.filter(r => {
+    if (!isActiveSlot(r)) return false;
+
+    return !q ||
+      g(r, 'Slot').toLowerCase().includes(q) ||
+      g(r, 'Product Code').toLowerCase().includes(q) ||
+      g(r, 'Product Name').toLowerCase().includes(q);
+  });
+
+  renderTable(
+    'aslot-wrap',
+    rows,
+    ASLOT_COLS,
+    ['Link'],
+    null,
+    null,
+    null,
+    ['Product Name'],
+    ['Image']
+  );
+}
+
+// BLINKIT SLOT
+function renderBSlot() {
+  const q = (document.getElementById('bslot-search').value || '')
+    .toLowerCase()
+    .trim();
+
+  const rows = DATA.bslot.filter(r => {
+    if (!isActiveSlot(r)) return false;
+
+    return !q ||
+      g(r, 'Slot').toLowerCase().includes(q) ||
+      g(r, 'Product Code').toLowerCase().includes(q) ||
+      g(r, 'Product Name').toLowerCase().includes(q);
+  });
+
+  renderTable(
+    'bslot-wrap',
+    rows,
+    BSLOT_COLS,
+    ['Link'],
+    null,
+    null,
+    null,
+    ['Product Name'],
+    ['Image']
+  );
+} 
 // =============================================================
 // INIT + AUTO-REFRESH
 // =============================================================
