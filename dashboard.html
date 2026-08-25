@@ -173,6 +173,266 @@ footer a:hover{text-decoration:underline;}
 .ql-btn.amz:hover{background:#4f46e5;color:#fff;}
 .ql-btn.bli{background:#fff7ed;color:#ea580c;border:1.5px solid #fed7aa;}
 .ql-btn.bli:hover{background:#ea580c;color:#fff;}
+
+/* ===== MOBILE OPTIMIZATION ===== */
+@media(max-width:720px){
+  body{font-size:13px;}
+
+  .topbar{
+    height:56px;
+    padding:0 14px;
+  }
+  .brand-logo{width:32px;height:32px;border-radius:9px;}
+  .brand-name{font-size:14px;}
+  .topbar-badge{display:none;}
+
+  .nav-wrap{
+    top:56px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .nav-wrap::-webkit-scrollbar{display:none;}
+  .nav-inner{
+    flex-wrap:nowrap;
+    width:max-content;
+    min-width:100%;
+    padding:10px 12px;
+    gap:10px;
+  }
+  .nav-group-block{
+    flex:none;
+    min-width:285px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:6px;
+  }
+  .group-label{
+    grid-column:1/-1;
+    padding-left:2px;
+  }
+  .nav-btn{
+    padding:8px 7px;
+    font-size:11.5px;
+  }
+
+  .quick-links{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    padding:10px 12px;
+  }
+  .ql-btn{
+    min-width:0;
+    padding:10px 8px;
+    font-size:11.5px;
+  }
+
+  main{
+    padding:12px;
+  }
+  .card{
+    padding:14px;
+    margin-bottom:14px;
+    border-radius:12px;
+  }
+  .card-head{
+    margin-bottom:12px;
+  }
+  .card-head h2{
+    font-size:16px;
+  }
+  .card-head p{
+    font-size:12px;
+  }
+
+  .status-row{
+    align-items:flex-start;
+    font-size:11px;
+    margin-bottom:12px;
+  }
+  .status-row > span:last-child{
+    width:100%;
+  }
+
+  .toolbar,
+  .yt-filters{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+  .toolbar input[type=text],
+  .toolbar select,
+  .toolbar .btn,
+  .yt-filters input[type=text],
+  .yt-filters select,
+  .yt-filters .btn{
+    width:100%;
+    min-width:0;
+  }
+
+  /* Slot tables become cards on mobile.
+     Order and Refund tables stay in the original table format. */
+  #a-slot .table-wrap,
+  #b-slot .table-wrap{
+    overflow:visible;
+    max-height:none;
+    border:0;
+    border-radius:0;
+    background:transparent;
+  }
+
+  #a-slot table,
+  #a-slot tbody,
+  #b-slot table,
+  #b-slot tbody{
+    display:block;
+    width:100%;
+  }
+
+  #a-slot thead,
+  #b-slot thead{
+    display:none;
+  }
+
+  #a-slot tbody tr,
+  #b-slot tbody tr{
+    display:block;
+    width:100%;
+    margin-bottom:12px;
+    padding:4px 12px;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:12px;
+    box-shadow:var(--sh);
+  }
+
+  #a-slot tbody tr:hover,
+  #b-slot tbody tr:hover{
+    background:#fff;
+  }
+
+  #a-slot tbody td,
+  #b-slot tbody td{
+    display:grid;
+    grid-template-columns:105px minmax(0,1fr);
+    gap:12px;
+    align-items:start;
+    width:100%;
+    padding:10px 0;
+    border-bottom:1px solid #edf0f5;
+    white-space:normal;
+    text-align:left;
+    overflow-wrap:anywhere;
+  }
+
+  #a-slot tbody td:last-child,
+  #b-slot tbody td:last-child{
+    border-bottom:0;
+  }
+
+  #a-slot tbody td::before,
+  #b-slot tbody td::before{
+    content:attr(data-label);
+    font-size:10.5px;
+    line-height:1.35;
+    font-weight:800;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.35px;
+  }
+
+  #a-slot tbody td[data-label="Slot"],
+  #b-slot tbody td[data-label="Slot"]{
+    font-size:17px;
+    font-weight:800;
+    color:var(--accent);
+  }
+
+  #a-slot tbody td[data-label="Product Code"],
+  #b-slot tbody td[data-label="Product Code"]{
+    font-weight:700;
+  }
+
+  #a-slot .product-name-cell,
+  #b-slot .product-name-cell{
+    min-width:0;
+    max-width:none;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:8px;
+  }
+
+  #a-slot .product-name-text,
+  #b-slot .product-name-text{
+    width:100%;
+    white-space:normal;
+    line-height:1.4;
+  }
+
+  #a-slot .copy-btn,
+  #b-slot .copy-btn{
+    padding:6px 9px;
+  }
+
+  #a-slot .product-thumb,
+  #b-slot .product-thumb{
+    width:78px;
+    height:78px;
+  }
+
+  /* Product link works like a clear mobile CTA */
+  #a-slot td[data-label="Link"] .lnk,
+  #b-slot td[data-label="Link"] .lnk{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:38px;
+    padding:8px 14px;
+    border-radius:9px;
+    background:var(--accent);
+    color:#fff;
+    text-decoration:none;
+  }
+
+  .badge{
+    white-space:normal;
+    text-align:center;
+  }
+
+  .dark-block{
+    padding:16px;
+  }
+  .forms-grid{
+    grid-template-columns:1fr;
+  }
+
+  #guideline-frame{
+    height:68vh !important;
+  }
+
+  footer{
+    padding:20px 14px;
+    font-size:11.5px;
+  }
+}
+
+@media(max-width:390px){
+  .quick-links{
+    grid-template-columns:1fr;
+  }
+  .nav-group-block{
+    min-width:260px;
+  }
+  #a-slot tbody td,
+  #b-slot tbody td{
+    grid-template-columns:92px minmax(0,1fr);
+    gap:10px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -403,9 +663,9 @@ const YOUTUBE_CSV_URL = csvUrl(YT_ID, YT_GID);
 // Column maps — edit these to change visible columns
 // For slot images, add a Google Sheet column named exactly "Image" and paste a public image URL in each row.
 const ASLOT_COLS  = ["Slot","Product Code","Review Slot","Rating Slot","Reel on insta+ video Review on amazon","Product Name","Image","Link"];
-const AORD_COLS   = ["Timestamp","Name","Order id","Delivery Date","Product ID","Days Delivered","Take Deals","status"];
+const AORD_COLS   = ["Timestamp","Name","Order id","Delivery Date","Product ID","Days Delivered","Taken Deals"];
 const AREF_COLS   = ["Timestamp","Reviewer Name","ORDER ID","Order Code","Payment Date","Payment","Refund days left","Price Check","Checked List"];
-const BORD_COLS   = ["Timestamp","Name","Order ID","Delivery Date","Product Code","Location","Take Deals","status"];
+const BORD_COLS   = ["Timestamp","Name","Order ID","Delivery Date","Product Code","Location","Taken Deals"];
 const BREF_COLS   = ["Timestamp","Reviewer Name","Order ID","Delivery Date","Product Code","Payment date","Refund days left","payment status"];
 const BSLOT_COLS  = ["Slot","Product Code","LOC","Review Slot","Rating Slot","Reel on insta+ video Review on amazon","Product Name","Image","Link"];
 
@@ -524,35 +784,63 @@ async function copyCellText(btn){
 
 function renderTable(wrapId, rows, cols, linkCols, paymentCols, checkedCols, matchCols, copyCols, imageCols){
   const wrap=document.getElementById(wrapId);
-  if(!rows.length){wrap.innerHTML='<div class="empty">No matching records.</div>';return;}
-  let html='<table><thead><tr>'+cols.map(c=>'<th>'+escapeHtml(c)+'</th>').join('')+'</tr></thead><tbody>';
+  if(!rows.length){
+    wrap.innerHTML='<div class="empty">No matching records.</div>';
+    return;
+  }
+
+  let html='<table><thead><tr>'+
+    cols.map(c=>'<th>'+escapeHtml(c)+'</th>').join('')+
+    '</tr></thead><tbody>';
+
   rows.forEach(r=>{
     html+='<tr>';
+
     cols.forEach(c=>{
       const v=g(r,c);
+      const label=escapeAttr(c);
+      const tdOpen='<td data-label="'+label+'">';
+
       if(linkCols&&linkCols.includes(c)){
-        html+='<td>'+(v?'<a class="lnk" href="'+escapeAttr(v)+'" target="_blank" rel="noopener noreferrer">Open ↗</a>':'—')+'</td>';
+        html+=tdOpen+
+          (v?'<a class="lnk" href="'+escapeAttr(v)+'" target="_blank" rel="noopener noreferrer">Open Product ↗</a>':'—')+
+          '</td>';
+
       }else if(imageCols&&imageCols.includes(c)){
         const src=normalizeImageUrl(v);
-        html+='<td>'+(src
-          ?'<a href="'+escapeAttr(src)+'" target="_blank" rel="noopener noreferrer" title="Open full image"><img class="product-thumb" src="'+escapeAttr(src)+'" alt="Product image" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.nextElementSibling.style.display=\'inline\';"></a><span class="image-empty" style="display:none">Image unavailable</span>'
-          :'<span class="image-empty">—</span>')+'</td>';
+        html+=tdOpen+
+          (src
+            ?'<a href="'+escapeAttr(src)+'" target="_blank" rel="noopener noreferrer" title="Open full image">'+
+             '<img class="product-thumb" src="'+escapeAttr(src)+'" alt="Product image" loading="lazy" '+
+             'onerror="this.style.display=\'none\';this.parentElement.nextElementSibling.style.display=\'inline\';">'+
+             '</a><span class="image-empty" style="display:none">Image unavailable</span>'
+            :'<span class="image-empty">—</span>')+
+          '</td>';
+
       }else if(copyCols&&copyCols.includes(c)){
-        html+='<td><div class="product-name-cell"><span class="product-name-text">'+escapeHtml(v||'—')+'</span>'+
+        html+=tdOpen+
+          '<div class="product-name-cell">'+
+          '<span class="product-name-text">'+escapeHtml(v||'—')+'</span>'+
           (v?'<button class="copy-btn" type="button" data-copy="'+escapeAttr(v)+'" onclick="copyCellText(this)" title="Copy product name">⧉ Copy</button>':'')+
           '</div></td>';
+
       }else if(paymentCols&&paymentCols.includes(c)){
-        html+='<td>'+payBadge(v)+'</td>';
+        html+=tdOpen+payBadge(v)+'</td>';
+
       }else if(checkedCols&&checkedCols.includes(c)){
-        html+='<td>'+checkedBadge(v)+'</td>';
+        html+=tdOpen+checkedBadge(v)+'</td>';
+
       }else if(matchCols&&matchCols.includes(c)){
-        html+='<td>'+matchBadge(v)+'</td>';
+        html+=tdOpen+matchBadge(v)+'</td>';
+
       }else{
-        html+='<td>'+escapeHtml(v||'')+'</td>';
+        html+=tdOpen+escapeHtml(v||'—')+'</td>';
       }
     });
+
     html+='</tr>';
   });
+
   html+='</tbody></table>';
   wrap.innerHTML=html;
 }
