@@ -436,6 +436,15 @@ async function fetchCSV(url){
 
 function g(row,col){return row&&row[col]!==undefined?row[col]:'';}
 
+// Slot rows are visible only when the sheet's Status column is set to Active.
+// Header matching is case-insensitive, so Status/status/STATUS all work.
+function isActiveSlot(row){
+  if(!row)return false;
+  const statusKey=Object.keys(row).find(key=>key.toLowerCase().trim()==='status');
+  const status=statusKey?(row[statusKey]||'').toString().toLowerCase().trim():'';
+  return status==='active';
+}
+
 function setStatus(dotId,statusId,updId,ok,msg){
   document.getElementById(dotId).style.background=ok?'var(--green)':'var(--red)';
   document.getElementById(statusId).textContent=msg;
@@ -555,13 +564,14 @@ async function loadASlot(){
   const w='aslot-wrap';
   try{
     DATA.aslot=await fetchCSV(ASLOT_CSV);
-    setStatus('aslot-dot','aslot-status','aslot-updated',true,'Live — '+DATA.aslot.length+' records');
+    const activeCount=DATA.aslot.filter(isActiveSlot).length;
+    setStatus('aslot-dot','aslot-status','aslot-updated',true,'Live — '+activeCount+' active records');
     renderASlot();
   }catch(e){setStatus('aslot-dot','aslot-status','aslot-updated',false,'Error');document.getElementById(w).innerHTML='<div class="error">'+e.message+'</div>';}
 }
 function renderASlot(){
-  const q=(document.getElementById('aslot-search').value||'').toLowerCase();
-  const rows=DATA.aslot.filter(r=>!q||(g(r,'Slot').toLowerCase().includes(q)||g(r,'Product Code').toLowerCase().includes(q)||g(r,'Product Name').toLowerCase().includes(q)));
+  const q=(document.getElementById('aslot-search').value||'').toLowerCase().trim();
+  const rows=DATA.aslot.filter(r=>isActiveSlot(r)&&(!q||(g(r,'Slot').toLowerCase().includes(q)||g(r,'Product Code').toLowerCase().includes(q)||g(r,'Product Name').toLowerCase().includes(q))));
   renderTable('aslot-wrap',rows,ASLOT_COLS,['Link'],null,null,null,['Product Name'],['Image']);
 }
 
@@ -597,13 +607,14 @@ async function loadBSlot(){
   const w='bslot-wrap';
   try{
     DATA.bslot=await fetchCSV(BSLOT_CSV);
-    setStatus('bslot-dot','bslot-status','bslot-updated',true,'Live — '+DATA.bslot.length+' records');
+    const activeCount=DATA.bslot.filter(isActiveSlot).length;
+    setStatus('bslot-dot','bslot-status','bslot-updated',true,'Live — '+activeCount+' active records');
     renderBSlot();
   }catch(e){setStatus('bslot-dot','bslot-status','bslot-updated',false,'Error');document.getElementById(w).innerHTML='<div class="error">'+e.message+'</div>';}
 }
 function renderBSlot(){
-  const q=(document.getElementById('bslot-search').value||'').toLowerCase();
-  const rows=DATA.bslot.filter(r=>!q||(g(r,'Slot').toLowerCase().includes(q)||g(r,'Product Code').toLowerCase().includes(q)||g(r,'Product Name').toLowerCase().includes(q)));
+  const q=(document.getElementById('bslot-search').value||'').toLowerCase().trim();
+  const rows=DATA.bslot.filter(r=>isActiveSlot(r)&&(!q||(g(r,'Slot').toLowerCase().includes(q)||g(r,'Product Code').toLowerCase().includes(q)||g(r,'Product Name').toLowerCase().includes(q))));
   renderTable('bslot-wrap',rows,BSLOT_COLS,['Link'],null,null,null,['Product Name'],['Image']);
 }
 
